@@ -34,7 +34,7 @@ LIMIT ${process.argv[3] || 5};
   })
 }).catch(err => console.error('query error', err.stack)); */
 
-pool.query(`
+/*pool.query(`
 SELECT DISTINCT teachers.name as teacher, cohorts.name as cohort
 FROM teachers
 JOIN assistance_requests ON teacher_id = teachers.id
@@ -47,6 +47,25 @@ ORDER BY teacher;
   res.rows.forEach(row => {
     console.log(`${row.cohort}: ${row.teacher}`);
   })
-});
+});*/
+
+const values = [`%${process.argv[2]}%`, process.argv[3]]
+
+pool.query(`
+SELECT students.id, students.name, cohorts.name as cohort_name
+FROM students
+JOIN cohorts ON students.cohort_id = cohorts.id
+WHERE cohorts.name LIKE $1
+LIMIT $2;
+`, values)
+.then(res => {
+  res.rows.forEach(user => {
+    console.log(`${user.name} has an id of ${user.id} and was in the ${user.cohort_name} cohort`);
+  })
+}).catch(err => console.error('query error', err.stack));
+
+
+
+
 
 
